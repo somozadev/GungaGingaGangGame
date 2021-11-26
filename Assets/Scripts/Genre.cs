@@ -1,0 +1,1 @@
+public enum Genre { NULL, COMEDY, TRAGEDY }

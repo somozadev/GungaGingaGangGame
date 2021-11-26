@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
         if (isMoving)
         {
             Move(rawInput);
-            Rotate();//rawInput
+            Rotate();
         }
     }
     private void OnMove(InputValue value)
@@ -34,17 +34,8 @@ public class PlayerMovement : MonoBehaviour
         isMoving = rawInput == Vector2.zero ? false : true;
         movement_input = new Vector3(rawInput.x, 0f, rawInput.y);
     }
-    private void Rotate() //Vector2 input
+    private void Rotate()
     {
-        // if (input.x == -1)//leftrot
-        //     player.rotObject.transform.rotation = Quaternion.Euler(player.rotObject.transform.rotation.x, -90, player.rotObject.transform.rotation.z);
-        // else if (input.x == 1) //right rot
-        //     player.rotObject.transform.rotation = Quaternion.Euler(player.rotObject.transform.rotation.x, 90, player.rotObject.transform.rotation.z);
-        // if (input.y == 1)//front rot
-        //     player.rotObject.transform.rotation = Quaternion.Euler(player.rotObject.transform.rotation.x, 0, player.rotObject.transform.rotation.z);
-        // else if (input.y == -1) //down rot
-        //     player.rotObject.transform.rotation = Quaternion.Euler(player.rotObject.transform.rotation.x, -180, player.rotObject.transform.rotation.z);
-
         player.rotObject.transform.rotation = Quaternion.LookRotation(rb.velocity);
     }
     private void Move(Vector2 input)
