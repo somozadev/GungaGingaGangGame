@@ -6,11 +6,8 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     [SerializeField] int player_id;
-    [SerializeField] PlayerStats playerStats;
     [SerializeField] private PlayerInput playerInput;
     public PlayerInput getPlayerInput { get { return playerInput; } }
-
-
     public GameObject rotObject; 
         public void Init(int id)
     {   
@@ -19,8 +16,3 @@ public class Player : MonoBehaviour
     }
 }
 
-[System.Serializable]
-public class PlayerStats
-{
-
-}

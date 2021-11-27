@@ -357,9 +357,12 @@ MonoBehaviour:
   speed: 15
   movement_input: {x: 0, y: 0, z: 0}
   isPushing: 0
-  push_cooldown: 0
+  push_cooldown: 1
   push_power: 50
   push_penalty_time: 0.3
+  push_spherecast_radius: 1.2
+  current_push_range_detection: 2
+  max_push_range_detection: 2
   isTragedy: 0
   isComedy: 0
 --- !u!54 &599981329
@@ -388,7 +391,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Height: 2.8
   m_Direction: 1
   m_Center: {x: 0, y: 1.4, z: 0}

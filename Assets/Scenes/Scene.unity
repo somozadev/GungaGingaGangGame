@@ -908,10 +908,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7089696738930808552, guid: 1b27281a0b995c0489632f91013650db, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7089696739875797369, guid: 1b27281a0b995c0489632f91013650db, type: 3}
       propertyPath: m_Name
       value: Player
@@ -996,7 +992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NotificationBehavior: 1
-  m_MaxPlayerCount: 2
+  m_MaxPlayerCount: -1
   m_AllowJoining: 1
   m_JoinBehavior: 0
   m_PlayerJoinedEvent:
@@ -1014,7 +1010,31 @@ MonoBehaviour:
       m_Id: 94796e4c-82a2-4e7d-a1ee-e4002dd7b598
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings: []
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 3e5d38d8-2dfb-4e0b-8069-a8642e1adf5e
+        m_Path: <Mouse>/leftButton
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Join
+        m_Flags: 0
+      - m_Name: 
+        m_Id: 1348f90d-c3bf-461a-9278-100de2d35f93
+        m_Path: <Gamepad>/buttonSouth
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Join
+        m_Flags: 0
+      - m_Name: 
+        m_Id: 7934d176-dee5-4e5e-91f2-a736ef10c8af
+        m_Path: <Keyboard>/space
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Join
+        m_Flags: 0
     m_Reference: {fileID: 0}
   m_PlayerPrefab: {fileID: 7089696739875797369, guid: 1b27281a0b995c0489632f91013650db, type: 3}
   m_SplitScreen: 0

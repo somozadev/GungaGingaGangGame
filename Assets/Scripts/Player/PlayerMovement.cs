@@ -7,7 +7,9 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Acting info")]
     [SerializeField] private Genre current_genre;
-
+    [Header("Taunted effect")]
+    [Space(10)]
+    [SerializeField] public bool isTaunted;
     [Header("Movement")]
     [Space(10)]
     [SerializeField] public bool MovementBlocked;
@@ -21,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float push_cooldown;
     [SerializeField] private float push_power;
     [SerializeField] private float push_penalty_time;
+    [SerializeField] private float push_spherecast_radius;
+    [SerializeField] private float current_push_range_detection;
+    [SerializeField] private float max_push_range_detection;
+
 
     [Header("Tragedy")]
     [Space(10)]
@@ -42,13 +48,16 @@ public class PlayerMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (isMoving && !MovementBlocked)
+        if (!MovementBlocked)
         {
-            Move(movement_rawInput);
-            Rotate();
+            if (isMoving) { Move(movement_rawInput); Rotate(); }
+            if (isPushing && canPush)
+                Push();
+            if (isTragedy && !isComedy)
+                Tragedy();
+            if (isComedy && !isTragedy)
+                Comedy();
         }
-        if (isPushing && canPush)
-            Push();
     }
     private void OnMove(InputValue value)
     {
@@ -61,13 +70,11 @@ public class PlayerMovement : MonoBehaviour
         push_rawInput = System.Convert.ToBoolean(value.Get<float>());
         isPushing = push_rawInput;
     }
-
     private void OnTragedy(InputValue value)
     {
         tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
         isTragedy = tragedy_rawInput;
     }
-
     private void OnComedy(InputValue value)
     {
         comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
@@ -87,27 +94,41 @@ public class PlayerMovement : MonoBehaviour
 
         RaycastHit hit;
         Vector3 og = new Vector3(player.rotObject.transform.position.x, 2f, player.rotObject.transform.position.z);
-        if (Physics.SphereCast(og, 1f, transform.TransformDirection(player.rotObject.transform.forward), out hit, 1f))
+        if (Physics.SphereCast(og, push_spherecast_radius, transform.TransformDirection(player.rotObject.transform.forward), out hit, current_push_range_detection))
         {
-            Debug.DrawRay(og, transform.TransformDirection(player.rotObject.transform.forward) * hit.distance, Color.blue);
+            current_push_range_detection = hit.distance;
             if (hit.transform.tag.Equals("Interactuable"))
             {
                 Rigidbody rb2 = hit.transform.GetComponent<Rigidbody>();
+                rb2.AddForce((rb2.transform.position - rb.transform.position) * push_power, ForceMode.VelocityChange);
                 if (rb2.TryGetComponent<PlayerMovement>(out PlayerMovement movement))
                 {
-                    Debug.Log("SE DEBE ESTAR BLOKIANDO O KE LO KE ");
                     movement.StopAllCoroutines();
                     movement.MovementBlocked = true;
+                    movement.player.rotObject.transform.rotation = Quaternion.LookRotation(player.rotObject.transform.position);
                     movement.GiveMovementBack();
-                    // movement.StartCoroutine(movement.ReturnMovement());
                 }
-                rb2.AddForce((rb2.transform.position - rb.transform.position) * push_power, ForceMode.VelocityChange);
             }
         }
+        else
+            current_push_range_detection = max_push_range_detection;
+
 
         StartCoroutine(PushCd());
 
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Vector3 og = new Vector3(player.rotObject.transform.position.x, 2f, player.rotObject.transform.position.z);
+
+        Debug.DrawLine(og, og + transform.TransformDirection(player.rotObject.transform.forward) * current_push_range_detection);
+        Gizmos.DrawWireSphere(og + transform.TransformDirection(player.rotObject.transform.forward) * current_push_range_detection, push_spherecast_radius);
+    }
+
+
+
     public void GiveMovementBack()
     {
         StopCoroutine(ReturnMovement());
@@ -143,5 +164,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveVector = transform.TransformDirection(movement_input) * speed;
         rb.velocity = new Vector3(moveVector.x, rb.velocity.y, moveVector.z);
     }
+
+    private void Tragedy() { this.current_genre = Genre.TRAGEDY; }
+    private void Comedy() { this.current_genre = Genre.COMEDY; }
 
 }
