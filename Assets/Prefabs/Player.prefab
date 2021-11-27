@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 245799836}
   m_Layer: 0
   m_Name: Visuals
-  m_TagString: Untagged
+  m_TagString: Interactuable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 599981330}
   m_Layer: 0
   m_Name: Movement
-  m_TagString: Untagged
+  m_TagString: Interactuable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -351,11 +351,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07b733d688516f746b1f9e4be39e83bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInput: {fileID: 0}
+  current_genre: 0
+  MovementBlocked: 0
   isMoving: 0
   speed: 15
-  rawInput: {x: 0, y: 0}
   movement_input: {x: 0, y: 0, z: 0}
+  isPushing: 0
+  push_cooldown: 0
+  push_power: 50
+  push_penalty_time: 0.3
+  isTragedy: 0
+  isComedy: 0
 --- !u!54 &599981329
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -371,7 +377,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &599981330
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -383,9 +389,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 2.8
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.4, z: 0}
 --- !u!1 &7089696739875797369
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,7 +405,7 @@ GameObject:
   - component: {fileID: 567567452}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Interactuable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -446,7 +452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 0c3c37e7cc8398a498ce80c7f681be63, type: 3}
+  m_Actions: {fileID: -944628639613478452, guid: 0530d9d9a0d0b9a4db7ec99fb1a1eb19, type: 3}
   m_NotificationBehavior: 1
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:

@@ -52,7 +52,7 @@ public class Light : MonoBehaviour
         float x = center.x + r * Mathf.Cos(tetha);
         float y = Mathf.Abs(center.y + r * Mathf.Sin(tetha));
         Vector3 ret_ver = new Vector3(x, 0, y);
-        UnityEngine.Debug.Log(ret_ver.x + "," + ret_ver.y + "," + ret_ver.z);
+        // UnityEngine.Debug.Log(ret_ver.x + "," + ret_ver.y + "," + ret_ver.z);
         return ret_ver;
     }
 

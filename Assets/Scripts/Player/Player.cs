@@ -12,10 +12,9 @@ public class Player : MonoBehaviour
 
 
     public GameObject rotObject; 
-    public void Init(int id, InputActionAsset actions)
+        public void Init(int id)
     {   
         playerInput = GetComponent<PlayerInput>();
-        playerInput.actions=actions;
         this.player_id = id;
     }
 }
