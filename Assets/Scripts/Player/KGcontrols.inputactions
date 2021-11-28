@@ -15,7 +15,7 @@
                 },
                 {
                     "name": "Tragedy",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "c3659a28-f26f-48ba-9112-bf56f484a3c5",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -23,7 +23,7 @@
                 },
                 {
                     "name": "Comedy",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "5961517f-8194-48ac-ab97-5020b92d3563",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -109,7 +109,7 @@
                     "name": "",
                     "id": "242f5c6d-89d6-4ee3-955b-6141bb7813d9",
                     "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
+                    "interactions": "Tap",
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Tragedy",

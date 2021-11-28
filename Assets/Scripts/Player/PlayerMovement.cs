@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     [Header("Acting info")]
-    [SerializeField] private Genre current_genre;
+    [SerializeField] public Genre current_genre;
     [Header("Stunned")]
     [Space(10)]
     [SerializeField] public bool isStunned;
@@ -105,12 +105,12 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnTragedy()//InputValue value)
     {
+        Debug.Log("Tragedy callback");
         // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
         isTragedy = true;//tragedy_rawInput;
-        isComedy = false;
+        isComedy = false;   
         Tragedy();
         player_animator.SetBool("Tragedy", true);
-        isTragedy = false;
     }
     private void OnComedy()//InputValue value)
     {
@@ -245,7 +245,6 @@ public class PlayerMovement : MonoBehaviour
         isdelay_counter_trag = true;
         elapsed_time = 0f;
         this.current_genre = Genre.TRAGEDY; debug_text.text = "TRAGEDY"; debug_text.color = Color.blue;
-        Debug.LogWarning("Points added by " + gameObject.name);
         player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.TRAGEDY);
         while (elapsed_time <= delay_counter)
         {
@@ -262,7 +261,6 @@ public class PlayerMovement : MonoBehaviour
         {
             isdelay_restarted_trag = false;
             elapsed_time = 0f;
-            Debug.Log("ENTRO AL ELSE wtf si restart es " + isdelay_restarted_trag);
             StartCoroutine(TragedyCorr());
         }
     }

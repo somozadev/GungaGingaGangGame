@@ -7,13 +7,23 @@ public class UIManager : MonoBehaviour
 {
     public Image p1;
     public Image p2;
-    [SerializeField] float dif; 
+    [SerializeField] float dif;
     public float ratio = 0.001f;
+
+    public TMPro.TMP_Text timer;
 
     void Update()
     {
         if (GameManager.Instance.player1 != null && GameManager.Instance.player2 != null)
+        {
+            UpdateTime();
             UpdateFillAmount();
+        }
+    }
+
+    private void UpdateTime()
+    {
+        timer.text = GameManager.Instance.m + ":" + Mathf.RoundToInt(GameManager.Instance.s);
     }
     private void UpdateFillAmount()
     {
@@ -21,7 +31,7 @@ public class UIManager : MonoBehaviour
         if (dif > 0)//p1 wins
         {
             p1.fillAmount = (0.5f + Mathf.Abs(dif) * ratio);
-            p2.fillAmount = 1-p1.fillAmount;
+            p2.fillAmount = 1 - p1.fillAmount;
         }
         else
         {

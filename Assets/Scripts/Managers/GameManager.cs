@@ -10,13 +10,17 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null)
             instance = this;
-        else
-            Destroy(this);
-        DontDestroyOnLoad(gameObject);
+        // else
+        //     Destroy(this);
+        // DontDestroyOnLoad(gameObject);
     }
     #endregion
 
+    public bool gameGoesBrr;
+
+
     public UIManager uiManager;
+    public NpcManager npcManager;
 
     public Player player1;
     public Player player2;
@@ -24,6 +28,36 @@ public class GameManager : MonoBehaviour
     public List<Npc> comedy_npcs;
     public List<Npc> tragedy_npcs;
     public List<Npc> null_npcs;
+
+    public float m, s;
+
+
+    void Update()
+    {
+        if (gameGoesBrr)
+        {
+            if (s > 0)
+                s -= Time.deltaTime;
+            else{
+                s = 0; gameGoesBrr = false; EndGame();}
+            
+        }
+    }
+
+    private void EndGame(){}
+
+    public void StartGame()
+    {
+        gameGoesBrr = true;
+        npcManager.InitNpcs();
+        //init npcs
+        //start timer
+    }
+
+
+
+
+
 
 
     public int GetPointsToAddPlayer(Genre genre)
