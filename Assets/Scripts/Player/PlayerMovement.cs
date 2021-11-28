@@ -5,11 +5,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+
+
+
+    #region variables
+    public TMPro.TMP_Text debug_text;
+
+
     [Header("Acting info")]
     [SerializeField] private Genre current_genre;
-    [Header("Taunted effect")]
+    [Header("Stunned")]
     [Space(10)]
-    [SerializeField] public bool isTaunted;
+    [SerializeField] public bool isStunned;
     [Header("Movement")]
     [Space(10)]
     [SerializeField] public bool MovementBlocked;
@@ -18,14 +25,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Vector3 movement_input;
     [Header("Push")]
     [Space(10)]
+    [SerializeField] public GameObject target;
     [SerializeField] bool isPushing;
-    private bool canPush = true;
+    [SerializeField] private bool canPush = true;
     [SerializeField] float push_cooldown;
     [SerializeField] private float push_power;
     [SerializeField] private float push_penalty_time;
-    [SerializeField] private float push_spherecast_radius;
-    [SerializeField] private float current_push_range_detection;
-    [SerializeField] private float max_push_range_detection;
 
 
     [Header("Tragedy")]
@@ -34,6 +39,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Comedy")]
     [Space(10)]
     [SerializeField] bool isComedy;
+    [Header("Refs")]
+    [Space(10)]
+    [SerializeField] public Animator player_animator;
 
     private Vector2 movement_rawInput;
     private bool push_rawInput;
@@ -41,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
     private bool comedy_rawInput;
     private Player player;
     private Rigidbody rb;
+
+    #endregion
     private void Awake()
     {
         player = GetComponentInParent<Player>();
@@ -50,15 +60,38 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!MovementBlocked)
         {
-            if (isMoving) { Move(movement_rawInput); Rotate(); }
+            if (isMoving)
+            {
+                Move(movement_rawInput);
+                Rotate();
+                player_animator.SetBool("Moving", true);
+            }
+            else
+                player_animator.SetBool("Moving", false);
             if (isPushing && canPush)
+            {
                 Push();
-            if (isTragedy && !isComedy)
-                Tragedy();
-            if (isComedy && !isTragedy)
-                Comedy();
+            }
+            // if (isTragedy && !isComedy)
+            // {
+            //     Debug.Log("GGGG");
+            //     Tragedy();
+            //     player_animator.SetBool("Tragedy", true);
+            //     isTragedy = false;
+            // }
+            // else
+            //     player_animator.SetBool("Tragedy", false);
+            // if (isComedy && !isTragedy)
+            // {
+            //     Comedy();
+            //     player_animator.SetBool("Comedy", true);
+            // }
+            // else
+            //     player_animator.SetBool("Comedy", false);
         }
     }
+
+    #region inputs
     private void OnMove(InputValue value)
     {
         movement_rawInput = value.Get<Vector2>();
@@ -70,64 +103,68 @@ public class PlayerMovement : MonoBehaviour
         push_rawInput = System.Convert.ToBoolean(value.Get<float>());
         isPushing = push_rawInput;
     }
-    private void OnTragedy(InputValue value)
+    private void OnTragedy()//InputValue value)
     {
-        tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-        isTragedy = tragedy_rawInput;
+        // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+        isTragedy = true;//tragedy_rawInput;
+        isComedy = false;
+        Tragedy();
+        player_animator.SetBool("Tragedy", true);
+        isTragedy = false;
     }
-    private void OnComedy(InputValue value)
+    private void OnComedy()//InputValue value)
     {
-        comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-        isComedy = comedy_rawInput;
+        // comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+        isComedy = true;//comedy_rawInput;
+        isTragedy = false;
+        Comedy();
+        player_animator.SetBool("Comedy", true);
     }
 
+    #endregion
 
-
+    #region push
     private void Push()
     {
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        canPush = false;
-
-        //pushanim
-
-
-        RaycastHit hit;
-        Vector3 og = new Vector3(player.rotObject.transform.position.x, 2f, player.rotObject.transform.position.z);
-        if (Physics.SphereCast(og, push_spherecast_radius, transform.TransformDirection(player.rotObject.transform.forward), out hit, current_push_range_detection))
+        if (target != null)
         {
-            current_push_range_detection = hit.distance;
-            if (hit.transform.tag.Equals("Interactuable"))
+            if (target.TryGetComponent<Rigidbody>(out Rigidbody rb2))
             {
-                Rigidbody rb2 = hit.transform.GetComponent<Rigidbody>();
-                rb2.AddForce((rb2.transform.position - rb.transform.position) * push_power, ForceMode.VelocityChange);
                 if (rb2.TryGetComponent<PlayerMovement>(out PlayerMovement movement))
                 {
                     movement.StopAllCoroutines();
                     movement.MovementBlocked = true;
-                    movement.player.rotObject.transform.rotation = Quaternion.LookRotation(player.rotObject.transform.position);
+                    movement.player.rotObject.transform.rotation = Quaternion.LookRotation(-player.rotObject.transform.forward);
+                    movement.player_animator.SetTrigger("Pushed");
+                    rb2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
+                    movement.GiveMovementBack();
+                }
+                else
+                    rb2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
+            }
+            else if (target.transform.parent.TryGetComponent<Rigidbody>(out Rigidbody rb2_2))
+            {
+                if (rb2_2.TryGetComponent<PlayerMovement>(out PlayerMovement movement))
+                {
+                    movement.StopAllCoroutines();
+                    movement.MovementBlocked = true;
+                    movement.player.rotObject.transform.rotation = Quaternion.LookRotation(-player.rotObject.transform.forward);
+                    movement.player_animator.SetTrigger("Pushed");
+                    rb2_2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
                     movement.GiveMovementBack();
                 }
             }
+
         }
-        else
-            current_push_range_detection = max_push_range_detection;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        canPush = false;
+        player_animator.SetTrigger("Push");
 
 
         StartCoroutine(PushCd());
 
     }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Vector3 og = new Vector3(player.rotObject.transform.position.x, 2f, player.rotObject.transform.position.z);
-
-        Debug.DrawLine(og, og + transform.TransformDirection(player.rotObject.transform.forward) * current_push_range_detection);
-        Gizmos.DrawWireSphere(og + transform.TransformDirection(player.rotObject.transform.forward) * current_push_range_detection, push_spherecast_radius);
-    }
-
-
 
     public void GiveMovementBack()
     {
@@ -154,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
         }
         canPush = true;
     }
-
+    #endregion
     private void Rotate()
     {
         player.rotObject.transform.rotation = Quaternion.LookRotation(rb.velocity);
@@ -165,7 +202,97 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector3(moveVector.x, rb.velocity.y, moveVector.z);
     }
 
-    private void Tragedy() { this.current_genre = Genre.TRAGEDY; }
-    private void Comedy() { this.current_genre = Genre.COMEDY; }
+    private void Tragedy()
+    {
+        if (!isdelay_counter_trag)
+        {
+            elapsed_time = 0f;
+            isdelay_counter_com = false;
+            isdelay_restarted_trag = false;
+            isdelay_restarted_com = false;
+            StopCoroutine(ComedyCorr());
+            StartCoroutine(TragedyCorr());
+        }
+        else
+        {
+            isdelay_restarted_trag = true;
+        }
+    }
+    private void Comedy()
+    {
+        if (!isdelay_counter_com)
+        {
+            elapsed_time = 0f;
+            isdelay_counter_trag = false;
+            isdelay_restarted_com = false;
+            isdelay_restarted_trag = false;
+            StopCoroutine(TragedyCorr());
+            StartCoroutine(ComedyCorr());
+        }
+        else
+        {
+            isdelay_restarted_com = true;
+        }
+    }
+    [SerializeField] private float delay_counter;
+    [SerializeField] private float elapsed_time;
+    [SerializeField] private bool isdelay_counter_com = false;
+    [SerializeField] private bool isdelay_restarted_com = false;
+    [SerializeField] private bool isdelay_counter_trag = false;
+    [SerializeField] private bool isdelay_restarted_trag = false;
+    private IEnumerator TragedyCorr()
+    {
+        isdelay_counter_trag = true;
+        elapsed_time = 0f;
+        this.current_genre = Genre.TRAGEDY; debug_text.text = "TRAGEDY"; debug_text.color = Color.blue;
+        Debug.LogWarning("Points added by " + gameObject.name);
+        player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.TRAGEDY);
+        while (elapsed_time <= delay_counter)
+        {
+            elapsed_time += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        if (!isdelay_restarted_trag)
+        {
+            isdelay_counter_trag = false;
+            this.current_genre = Genre.NULL; debug_text.text = "";
+            player_animator.SetBool("Tragedy", false);
+        }
+        else
+        {
+            isdelay_restarted_trag = false;
+            elapsed_time = 0f;
+            Debug.Log("ENTRO AL ELSE wtf si restart es " + isdelay_restarted_trag);
+            StartCoroutine(TragedyCorr());
+        }
+    }
+    private IEnumerator ComedyCorr()
+    {
+        isdelay_counter_com = true;
+        elapsed_time = 0f;
+        this.current_genre = Genre.COMEDY; debug_text.text = "COMEDY"; debug_text.color = Color.yellow;
+        player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.COMEDY);
+        while (elapsed_time <= delay_counter)
+        {
+            elapsed_time += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        if (!isdelay_restarted_com)
+        {
+            isdelay_counter_com = false;
+            this.current_genre = Genre.NULL; debug_text.text = "";
+            player_animator.SetBool("Comedy", false);
+        }
+        else
+        {
+            isdelay_restarted_com = false;
+            elapsed_time = 0f;
+            StartCoroutine(ComedyCorr());
+        }
+    }
+
+
+
+
 
 }

@@ -5,14 +5,20 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] int player_id;
+    [Header("Points")]
+    [SerializeField] public int points;
+
     [SerializeField] private PlayerInput playerInput;
+    [SerializeField] public PlayerMovement movement;
     public PlayerInput getPlayerInput { get { return playerInput; } }
-    public GameObject rotObject; 
-        public void Init(int id)
-    {   
-        playerInput = GetComponent<PlayerInput>();
-        this.player_id = id;
+    public GameObject rotObject;
+
+    void Start()
+    {
+        if (GameManager.Instance.player1 == null){
+            GameManager.Instance.player1 = this; gameObject.name = "Player1";}
+        else{
+            GameManager.Instance.player2 = this; gameObject.name = "Player2";}
     }
 }
 

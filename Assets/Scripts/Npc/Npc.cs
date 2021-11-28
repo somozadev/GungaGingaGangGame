@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Npc : MonoBehaviour
 {
+    [Header("Points")]
+    [SerializeField] private int points = 1;
+    public int getPoints { get { return points; } }
     [Header("Enums")]
     [SerializeField] Genre currentGenre;
     [SerializeField] NpcType npcType;
@@ -12,7 +15,7 @@ public class Npc : MonoBehaviour
     [Space(20)]
     [SerializeField] int wait_to_launch_time_start;
     [SerializeField] int wait_to_launch_time_end;
-    
+
     [Header("References")]
     [Space(20)]
     [SerializeField] GameObject throwable_prefab;
@@ -48,13 +51,14 @@ public class Npc : MonoBehaviour
 
         else if (rand > 40 && rand <= 80)
         {
-            currentGenre = Genre.TRAGEDY; text.text = "TRAGEDY";text.color = Color.blue;
+            currentGenre = Genre.TRAGEDY; text.text = "TRAGEDY"; text.color = Color.blue;
         }
 
         else
         {
             currentGenre = Genre.NULL; text.text = "";
         }
+        GameManager.Instance.MoveNpcTo(this, currentGenre);
     }
 
     private void PerformAction()
