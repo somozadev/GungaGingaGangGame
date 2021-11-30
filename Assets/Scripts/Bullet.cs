@@ -4,18 +4,23 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    public float stunt_time;
     [SerializeField] bool debugPath;
     Rigidbody rb;
     [SerializeField] float h = 5f;
     [SerializeField] float g = -18f;
 
     Vector3 target_pos;
-    
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     LaunchData CalculateLaunchData()
     {
         rb.useGravity = true;
         float displacementY = target_pos.y - rb.transform.position.y;
-        Vector3 displacementXZ = new Vector3(target_pos.x - rb.transform.position.x, 0,target_pos.z - rb.transform.position.z);
+        Vector3 displacementXZ = new Vector3(target_pos.x - rb.transform.position.x, 0, target_pos.z - rb.transform.position.z);
 
         Vector3 velY = Vector3.up * Mathf.Sqrt(-2 * g * h);
         float time = (Mathf.Sqrt(-2 * h / g) + Mathf.Sqrt(2 * (displacementY - h) / g));
@@ -25,20 +30,46 @@ public class Bullet : MonoBehaviour
 
 
 
-    public void Launch(Vector3 pos)
+    public void Launch(Vector3 pos, bool destroyOnFloor)
     {
-        target_pos = pos;
-        rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
-        Physics.gravity = Vector3.up * g;
-        rb.velocity = CalculateLaunchData().initialVelocity;
-
+        if (pos != Vector3.zero)
+        {
+            destroy_on_floor = destroyOnFloor;
+            target_pos = pos;
+            rb = GetComponent<Rigidbody>();
+            rb.useGravity = false;
+            Physics.gravity = Vector3.up * g;
+            rb.velocity = CalculateLaunchData().initialVelocity;
+        }
+        else
+            Destroy(gameObject);
     }
 
-
-
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag.Equals("Interactuable"))
+        {
+            collision.gameObject.GetComponent<PlayerMovement>().GetStunned(stunt_time);
+            //particle
+            Destroy(gameObject);
+        }
+    }
+    public bool destroy_on_floor;
+    public float waitToSelfDestroyTime = 3f;
+    private float waitToSelfDestroyTimeCounter = 0f;
     private void Update()
     {
+        waitToSelfDestroyTimeCounter += Time.deltaTime;
+        if (waitToSelfDestroyTimeCounter > waitToSelfDestroyTime)
+            Destroy(gameObject);
+        if (destroy_on_floor)
+        {
+            if (rb.velocity.magnitude <= 0.5f)
+            {
+                Destroy(gameObject);
+            }
+
+        }
         if (debugPath)
             DrawPath();
     }

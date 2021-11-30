@@ -226,8 +226,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e7f804212e72eee4db9c9d74f8d20a23, type: 2}
+  m_sharedMaterial: {fileID: -4948246650341903043, guid: e7f804212e72eee4db9c9d74f8d20a23, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -438,6 +438,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points: 0
+  points_factor: 1
+  p1mat: {fileID: 2100000, guid: c8f0b86d26f07d2489892d0e8a67cd49, type: 2}
+  p2mat: {fileID: 2100000, guid: 3bb7211c695af0e4c89deb413093fabf, type: 2}
+  meshMat: {fileID: 8292673559117353374}
   playerInput: {fileID: 567567452}
   movement: {fileID: 0}
   rotObject: {fileID: 245799835}
@@ -556,5 +560,10 @@ Transform:
 --- !u!95 &1669816380655528030 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5916455939638517393, guid: 7e2b3960396e4104f98f579e1bb889ee, type: 3}
+  m_PrefabInstance: {fileID: 4987481990820181711}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8292673559117353374 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3900793306279864145, guid: 7e2b3960396e4104f98f579e1bb889ee, type: 3}
   m_PrefabInstance: {fileID: 4987481990820181711}
   m_PrefabAsset: {fileID: 0}

@@ -53,6 +53,7 @@ public class Npc : MonoBehaviour
     private IEnumerator WaitToPerformAgain()
     {
         float elapsed_time = 0;
+        wait_to_action_time_start = Random.Range(1,9);
         while (elapsed_time <= Random.Range(wait_to_action_time_start, wait_to_action_time_end))
         {
             elapsed_time += Time.deltaTime;
@@ -103,17 +104,17 @@ public class Npc : MonoBehaviour
 
     private void ThrowSpear()
     {
-        DoThrowWith(NpcType.SPEAR);
+        DoThrowWith(NpcType.SPEAR, true);
     }
     private void ThrowLighting()
     {
-        DoThrowWith(NpcType.LIGHTNING);
+        DoThrowWith(NpcType.LIGHTNING, true);
     }
     private void ThrowBanana()
     {
-        DoThrowWith(NpcType.BANANA);
+        DoThrowWith(NpcType.BANANA, false);
     }
-    private void DoThrowWith(NpcType type)
+    private void DoThrowWith(NpcType type, bool destr)
     {
         GameObject prefabcall = null;
         switch (type)
@@ -130,12 +131,12 @@ public class Npc : MonoBehaviour
             if (currentGenre.Equals(Genre.COMEDY))
             {
                 GameObject bullet = GameObject.Instantiate(prefabcall, start_point.position, Quaternion.identity);
-                bullet.GetComponent<Bullet>().Launch(GetPosToShoot(Genre.TRAGEDY));
+                bullet.GetComponent<Bullet>().Launch(GetPosToShoot(Genre.TRAGEDY), destr);
             }
             else if (currentGenre.Equals(Genre.TRAGEDY))
             {
                 GameObject bullet = GameObject.Instantiate(prefabcall, start_point.position, Quaternion.identity);
-                bullet.GetComponent<Bullet>().Launch(GetPosToShoot(Genre.COMEDY));
+                bullet.GetComponent<Bullet>().Launch(GetPosToShoot(Genre.COMEDY), destr);
             }
         }
     }
@@ -144,23 +145,23 @@ public class Npc : MonoBehaviour
     {
         Vector3 pos = Vector3.zero;
 
-        if (currentGenre.Equals(comparableGenre))
-        {
-            if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY) &&
-            GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) //random entre los 2
-            {
+        // if (currentGenre.Equals(comparableGenre))
+        // {
+        //     if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY) &&
+        //     GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) //random entre los 2
+        //     {
                 if (Random.Range(0, 2) == 0)
                     pos = GameManager.Instance.player1.GetComponentInChildren<Rigidbody>().transform.position;
                 else
                     pos = GameManager.Instance.player2.GetComponentInChildren<Rigidbody>().transform.position;
 
-            }
-            else if (GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) // el 2
-                pos = GameManager.Instance.player2.movement.transform.position;
-            else if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY))//el 1
-                pos = GameManager.Instance.player1.movement.transform.position;
+            // }
+            // else if (GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) // el 2
+            //     pos = GameManager.Instance.player2.movement.transform.position;
+            // else if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY))//el 1
+            //     pos = GameManager.Instance.player1.movement.transform.position;
 
-        }
+        // }
         return pos;
     }
 

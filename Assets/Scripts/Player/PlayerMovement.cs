@@ -56,6 +56,36 @@ public class PlayerMovement : MonoBehaviour
         player = GetComponentInParent<Player>();
         rb = GetComponent<Rigidbody>();
     }
+    public void GetStunned(float st)
+    {
+        isStunned = true;
+        MovementBlocked = true;
+        player_animator.SetBool("Stunned", true);
+        StartCoroutine(StunCorr(st));
+    }
+    private IEnumerator StunCorr(float st)
+    {
+        float elapsed_time1 = 0;
+        while (elapsed_time1 <= st)
+        {
+            elapsed_time1 += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        isStunned = false;
+        player_animator.SetBool("Stunned", false);
+        elapsed_time = 0f;
+        isComedy = false; isTragedy = false;
+
+        isdelay_counter_trag = isdelay_counter_com= false;
+        this.current_genre = Genre.NULL; debug_text.text = "";
+        player_animator.SetBool("Tragedy", false);
+        player_animator.SetBool("Comedy", false);
+
+
+
+        MovementBlocked = false;
+    }
+
     void FixedUpdate()
     {
         if (!MovementBlocked)
@@ -72,23 +102,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 Push();
             }
-            // if (isTragedy && !isComedy)
-            // {
-            //     Debug.Log("GGGG");
-            //     Tragedy();
-            //     player_animator.SetBool("Tragedy", true);
-            //     isTragedy = false;
-            // }
-            // else
-            //     player_animator.SetBool("Tragedy", false);
-            // if (isComedy && !isTragedy)
-            // {
-            //     Comedy();
-            //     player_animator.SetBool("Comedy", true);
-            // }
-            // else
-            //     player_animator.SetBool("Comedy", false);
+
         }
+
     }
 
     #region inputs
@@ -105,20 +121,33 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnTragedy()//InputValue value)
     {
-        Debug.Log("Tragedy callback");
-        // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-        isTragedy = true;//tragedy_rawInput;
-        isComedy = false;   
-        Tragedy();
-        player_animator.SetBool("Tragedy", true);
+
+        if (!MovementBlocked)
+        {
+            if (!isComedy)
+            {
+                Debug.Log("Tragedy callback");
+                // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+                isTragedy = true;//tragedy_rawInput;
+                isComedy = false;
+                Tragedy();
+                player_animator.SetBool("Tragedy", true);
+            }
+        }
     }
     private void OnComedy()//InputValue value)
     {
-        // comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-        isComedy = true;//comedy_rawInput;
-        isTragedy = false;
-        Comedy();
-        player_animator.SetBool("Comedy", true);
+        if (!MovementBlocked)
+        {
+            if (!isTragedy)
+            {
+                // comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+                isComedy = true;//comedy_rawInput;
+                isTragedy = false;
+                Comedy();
+                player_animator.SetBool("Comedy", true);
+            }
+        }
     }
 
     #endregion
@@ -204,11 +233,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Tragedy()
     {
-        if (!isdelay_counter_trag)
+        if (!isdelay_counter_trag && !isdelay_restarted_trag)
         {
             elapsed_time = 0f;
             isdelay_counter_com = false;
-            isdelay_restarted_trag = false;
             isdelay_restarted_com = false;
             StopCoroutine(ComedyCorr());
             StartCoroutine(TragedyCorr());
@@ -217,15 +245,15 @@ public class PlayerMovement : MonoBehaviour
         {
             isdelay_restarted_trag = true;
         }
+
     }
     private void Comedy()
     {
-        if (!isdelay_counter_com)
+        if (!isdelay_counter_com && !isdelay_restarted_com)
         {
             elapsed_time = 0f;
-            isdelay_counter_trag = false;
+            isdelay_counter_com = false;
             isdelay_restarted_com = false;
-            isdelay_restarted_trag = false;
             StopCoroutine(TragedyCorr());
             StartCoroutine(ComedyCorr());
         }
@@ -233,6 +261,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isdelay_restarted_com = true;
         }
+
     }
     [SerializeField] private float delay_counter;
     [SerializeField] private float elapsed_time;
@@ -243,7 +272,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator TragedyCorr()
     {
         isdelay_counter_trag = true;
-        elapsed_time = 0f;
+
         this.current_genre = Genre.TRAGEDY; debug_text.text = "TRAGEDY"; debug_text.color = Color.blue;
         player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.TRAGEDY);
         while (elapsed_time <= delay_counter)
@@ -254,20 +283,24 @@ public class PlayerMovement : MonoBehaviour
         if (!isdelay_restarted_trag)
         {
             isdelay_counter_trag = false;
+            isTragedy = false;
             this.current_genre = Genre.NULL; debug_text.text = "";
             player_animator.SetBool("Tragedy", false);
         }
         else
         {
-            isdelay_restarted_trag = false;
             elapsed_time = 0f;
+            isdelay_counter_trag = false;
+            isdelay_restarted_com = false;
+            isdelay_restarted_trag = false;
             StartCoroutine(TragedyCorr());
         }
+
     }
     private IEnumerator ComedyCorr()
     {
         isdelay_counter_com = true;
-        elapsed_time = 0f;
+
         this.current_genre = Genre.COMEDY; debug_text.text = "COMEDY"; debug_text.color = Color.yellow;
         player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.COMEDY);
         while (elapsed_time <= delay_counter)
@@ -278,13 +311,16 @@ public class PlayerMovement : MonoBehaviour
         if (!isdelay_restarted_com)
         {
             isdelay_counter_com = false;
+            isComedy = false;
             this.current_genre = Genre.NULL; debug_text.text = "";
             player_animator.SetBool("Comedy", false);
         }
         else
         {
-            isdelay_restarted_com = false;
             elapsed_time = 0f;
+            isdelay_counter_com = false;
+            isdelay_restarted_com = false;
+            isdelay_restarted_trag = false;
             StartCoroutine(ComedyCorr());
         }
     }
