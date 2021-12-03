@@ -6,8 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
 
-
-
     #region variables
     public TMPro.TMP_Text debug_text;
 
@@ -41,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool isComedy;
     [Header("Refs")]
     [Space(10)]
+    // [SerializeField] private OnlineRefPlayer online;
     [SerializeField] public Animator player_animator;
 
     private Vector2 movement_rawInput;
