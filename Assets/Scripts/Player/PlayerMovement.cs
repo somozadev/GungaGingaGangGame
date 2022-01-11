@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPunObservable
 {
 
     #region variables
@@ -49,11 +51,30 @@ public class PlayerMovement : MonoBehaviour
     private Player player;
     private Rigidbody rb;
 
-    #endregion
+    #endregion    PhotonView photonView;
+    public PhotonView view;
+
+
+    Quaternion direction = Quaternion.Euler(0, 180, 0);
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(direction);
+        }
+        else
+        {
+            direction = (Quaternion)stream.ReceiveNext();
+        }
+    }
+
     private void Awake()
     {
         player = GetComponentInParent<Player>();
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();        
+        view = GetComponent<PhotonView>();
+
     }
     public void GetStunned(float st)
     {
@@ -75,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
         elapsed_time = 0f;
         isComedy = false; isTragedy = false;
 
-        isdelay_counter_trag = isdelay_counter_com= false;
+        isdelay_counter_trag = isdelay_counter_com = false;
         this.current_genre = Genre.NULL; debug_text.text = "";
         player_animator.SetBool("Tragedy", false);
         player_animator.SetBool("Comedy", false);
@@ -87,21 +108,27 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!MovementBlocked)
+        Rotate();
+        if (view != null)
         {
-            if (isMoving)
+            if (view.IsMine)
             {
-                Move(movement_rawInput);
-                Rotate();
-                player_animator.SetBool("Moving", true);
-            }
-            else
-                player_animator.SetBool("Moving", false);
-            if (isPushing && canPush)
-            {
-                Push();
-            }
+                if (!MovementBlocked)
+                {
+                    if (isMoving)
+                    {
+                        Move(movement_rawInput);
+                        player_animator.SetBool("Moving", true);
+                    }
+                    else
+                        player_animator.SetBool("Moving", false);
+                    if (isPushing && canPush)
+                    {
+                        Push();
+                    }
 
+                }
+            }
         }
 
     }
@@ -120,31 +147,42 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnTragedy()//InputValue value)
     {
-
-        if (!MovementBlocked)
+        if (view != null)
         {
-            if (!isComedy)
+            if (view.IsMine)
             {
-                Debug.Log("Tragedy callback");
-                // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-                isTragedy = true;//tragedy_rawInput;
-                isComedy = false;
-                Tragedy();
-                player_animator.SetBool("Tragedy", true);
+                if (!MovementBlocked)
+                {
+                    if (!isComedy)
+                    {
+                        Debug.Log("Tragedy callback");
+                        // tragedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+                        isTragedy = true;//tragedy_rawInput;
+                        isComedy = false;
+                        Tragedy();
+                        player_animator.SetBool("Tragedy", true);
+                    }
+                }
             }
         }
     }
     private void OnComedy()//InputValue value)
     {
-        if (!MovementBlocked)
+        if (view != null)
         {
-            if (!isTragedy)
+            if (view.IsMine)
             {
-                // comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
-                isComedy = true;//comedy_rawInput;
-                isTragedy = false;
-                Comedy();
-                player_animator.SetBool("Comedy", true);
+                if (!MovementBlocked)
+                {
+                    if (!isTragedy)
+                    {
+                        // comedy_rawInput = System.Convert.ToBoolean(value.Get<float>());
+                        isComedy = true;//comedy_rawInput;
+                        isTragedy = false;
+                        Comedy();
+                        player_animator.SetBool("Comedy", true);
+                    }
+                }
             }
         }
     }
@@ -169,6 +207,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                     rb2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
+                    // view.RPC("RPC_Push", RpcTarget.All, rb2);
             }
             else if (target.transform.parent.TryGetComponent<Rigidbody>(out Rigidbody rb2_2))
             {
@@ -180,6 +219,7 @@ public class PlayerMovement : MonoBehaviour
                     movement.player_animator.SetTrigger("Pushed");
                     rb2_2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
                     movement.GiveMovementBack();
+                    // view.RPC("RPC_Push", RpcTarget.All, rb2);
                 }
             }
 
@@ -194,6 +234,16 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    [PunRPC]
+    void RPC_Push(Rigidbody rb2)
+    {
+        Debug.Log("RPC PUSH GOES VBRRR");
+        if (!view.IsMine)
+            return;
+
+        rb2.AddForce((player.rotObject.transform.forward) * push_power, ForceMode.VelocityChange);
+
+    }
     public void GiveMovementBack()
     {
         StopCoroutine(ReturnMovement());
@@ -222,7 +272,12 @@ public class PlayerMovement : MonoBehaviour
     #endregion
     private void Rotate()
     {
-        player.rotObject.transform.rotation = Quaternion.LookRotation(rb.velocity);
+        if (rb.velocity.magnitude > 3f)
+        {
+            Debug.Log("vel: " + rb.velocity.magnitude);
+            direction = Quaternion.LookRotation(rb.velocity);
+            player.rotObject.transform.rotation = direction;
+        }
     }
     private void Move(Vector2 input)
     {

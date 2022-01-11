@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public List<Npc> tragedy_npcs;
     public List<Npc> null_npcs;
 
-    public  Animator clouds;
+    public Animator clouds;
 
     public float m, s;
 
@@ -50,10 +50,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject p1Wins,p2Wins;
+    public GameObject p1Wins, p2Wins;
     private void EndGame()
     {
-        if(GameManager.Instance.player1.points - GameManager.Instance.player2.points > 0)
+        if (GameManager.Instance.player1.points - GameManager.Instance.player2.points > 0)
             p1Wins.SetActive(true);
         else
             p2Wins.SetActive(true);
@@ -65,9 +65,9 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitToQuit()
     {
         float elapsed_time = 0;
-        while(elapsed_time <= 5f)
+        while (elapsed_time <= 5f)
         {
-            elapsed_time+= Time.deltaTime; 
+            elapsed_time += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         clouds.SetTrigger("LoadLevel");
@@ -78,7 +78,8 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         gameGoesBrr = true;
-        npcManager.InitNpcs();
+        if (npcManager != null)
+            npcManager.InitNpcs();
         //init npcs
         //start timer
     }

@@ -14,7 +14,7 @@ public class LevelController : MonoBehaviour
 
     public Image fillImage;
     public bool exitGame;
-    // Start is called before the first frame update
+    
     void Start()
     {
         timer = 0f;

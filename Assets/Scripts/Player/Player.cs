@@ -3,8 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
+using Photon.Realtime;
+
+[System.Serializable]
 public class Player : MonoBehaviour
 {
+    [Header("Multiplayer Info")]
+    public string nickname;
+    public Photon.Realtime.Player _player;
+    [Space(10)]
     [Header("Points")]
     [SerializeField] public int points;
     [SerializeField] public float points_factor = 1f;
@@ -18,6 +26,17 @@ public class Player : MonoBehaviour
     public GameObject rotObject;
 
     void Start()
+    {
+        nickname = PhotonNetwork.LocalPlayer.NickName;
+        InitLocalCoop();
+    }
+
+    public void SetupOnlinePlayer(string name)
+    {
+        nickname = name;
+    }
+
+    void InitLocalCoop()
     {
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
@@ -51,6 +70,7 @@ public class Player : MonoBehaviour
                 transform.rotation = GameManager.Instance.player2_pos.rotation;
                 GameManager.Instance.player2 = this; gameObject.name = "Player2";
                 meshMat.GetComponent<SkinnedMeshRenderer>().material = p2mat;
+
                 GameManager.Instance.StartGame();
             }
         }
