@@ -55,7 +55,7 @@ public class LevelController : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("Scene");
+            SceneManager.LoadScene("PlayableScene");
             // Debug.Log("Level loaded");w
         }
 
