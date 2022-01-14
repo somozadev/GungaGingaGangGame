@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using EZCameraShake;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -61,6 +62,8 @@ public class PlayerMovement : MonoBehaviour
         isStunned = true;
         MovementBlocked = true;
         player_animator.SetBool("Stunned", true);
+        CameraShaker.Instance.ShakeOnce(2f, 2f, 0.1f, 1f);
+
         StartCoroutine(StunCorr(st));
     }
     private IEnumerator StunCorr(float st)
