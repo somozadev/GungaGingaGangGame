@@ -36,7 +36,7 @@ public class Npc : MonoBehaviour
     }
 
     public void StartNpc() { StartCoroutine(WaitToLaunchAgain()); }
-    private void DoCorrWait() { SelectGenre();}
+    private void DoCorrWait() { SelectGenre(); }
     private IEnumerator WaitToLaunchAgain()
     {
         float elapsed_time = 0;
@@ -102,7 +102,8 @@ public class Npc : MonoBehaviour
                 ThrowBanana();
                 break;
         }
-        StartCoroutine(WaitToPerformAgain());
+        // StartCoroutine(WaitToPerformAgain());
+        SelectGenre();
     }
 
 
