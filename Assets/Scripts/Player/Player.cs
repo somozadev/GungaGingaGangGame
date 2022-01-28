@@ -25,34 +25,34 @@ public class Player : MonoBehaviour
             {
                 GameManager.Instance.player1 = this;
                 meshMat.GetComponent<SkinnedMeshRenderer>().material = p1mat;
-                transform.position = GameManager.Instance.player1_pos.position;
+                transform.position = Vector3.zero;//GameManager.Instance.player1_pos.position;
                 transform.rotation = GameManager.Instance.player1_pos.rotation;
             }
 
-            else
-            {
-                GameManager.Instance.player2 = this;
-                meshMat.GetComponent<SkinnedMeshRenderer>().material = p2mat;
-                transform.position = GameManager.Instance.player2_pos.position;
-                transform.rotation = GameManager.Instance.player2_pos.rotation;//new Vector3(-9, 0, -2);
-            }
+            // else
+            // {
+            //     GameManager.Instance.player2 = this;
+            //     meshMat.GetComponent<SkinnedMeshRenderer>().material = p2mat;
+            //     transform.position = GameManager.Instance.player2_pos.position;
+            //     transform.rotation = GameManager.Instance.player2_pos.rotation;//new Vector3(-9, 0, -2);
+            // }
         }
         else
         {
             if (GameManager.Instance.player1 == null)
             {
-                transform.position = GameManager.Instance.player1_pos.position;
+                transform.position = Vector3.zero;//GameManager.Instance.player1_pos.position;
                 transform.rotation = GameManager.Instance.player1_pos.rotation;
                 GameManager.Instance.player1 = this; gameObject.name = "Player1"; meshMat.GetComponent<SkinnedMeshRenderer>().material = p1mat;
             }
-            else
-            {
-                transform.position = GameManager.Instance.player2_pos.position;
-                transform.rotation = GameManager.Instance.player2_pos.rotation;
-                GameManager.Instance.player2 = this; gameObject.name = "Player2";
-                meshMat.GetComponent<SkinnedMeshRenderer>().material = p2mat;
-                GameManager.Instance.StartGame();
-            }
+            // else
+            // {
+            //     transform.position = GameManager.Instance.player2_pos.position;
+            //     transform.rotation = GameManager.Instance.player2_pos.rotation;
+            //     GameManager.Instance.player2 = this; gameObject.name = "Player2";
+            //     meshMat.GetComponent<SkinnedMeshRenderer>().material = p2mat;
+            //     GameManager.Instance.StartGame();
+            // }
         }
     }
 }

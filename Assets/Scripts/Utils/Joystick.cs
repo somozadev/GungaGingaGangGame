@@ -12,7 +12,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public bool ArrowKeysSimulationEnabled = false;
 
     private Vector2 point;
-    private Vector2 normalizedPoint;
+    public Vector2 normalizedPoint;
 
     private float maxLength;
 

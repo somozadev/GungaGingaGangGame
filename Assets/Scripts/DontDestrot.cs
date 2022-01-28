@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class DontDestrot : MonoBehaviour
 {
-    // Start is called before the first frame update
+    #region Singleton
+    private static DontDestrot instance;
+    public static DontDestrot Instance { get { return instance; } }
     void Awake()
     {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this);
         DontDestroyOnLoad(gameObject);
     }
-    
-        
-    
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #endregion
 }

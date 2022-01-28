@@ -13,13 +13,13 @@ public class Npc : MonoBehaviour
 
     [Header("Range to change current genre")]
     [Space(20)]
-    [SerializeField] int wait_to_launch_time_start;
-    [SerializeField] int wait_to_launch_time_end;
+    [SerializeField] float wait_to_launch_time_start;
+    [SerializeField] float wait_to_launch_time_end;
 
     [Header("Range to change throw action")]
     [Space(20)]
-    [SerializeField] int wait_to_action_time_start;
-    [SerializeField] int wait_to_action_time_end;
+    [SerializeField] float wait_to_action_time_start;
+    [SerializeField] float wait_to_action_time_end;
 
     [Header("References")]
     [Space(20)]
@@ -35,12 +35,14 @@ public class Npc : MonoBehaviour
         StartAttack();
     }
 
-    public void StartNpc() { DoCorrWait(); }
-    private void DoCorrWait() { SelectGenre(); StartCoroutine(WaitToLaunchAgain()); }
+    public void StartNpc() { StartCoroutine(WaitToLaunchAgain()); }
+    private void DoCorrWait() { SelectGenre();}
     private IEnumerator WaitToLaunchAgain()
     {
         float elapsed_time = 0;
-        while (elapsed_time <= Random.Range(wait_to_launch_time_start, wait_to_launch_time_end))
+        wait_to_launch_time_start = Random.Range(1f, 6f);
+        wait_to_launch_time_start = Random.Range(6f, 9f);
+        while (elapsed_time <= Random.Range(wait_to_launch_time_start, wait_to_launch_time_start))
         {
             elapsed_time += Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -49,11 +51,12 @@ public class Npc : MonoBehaviour
     }
 
     public void StartAttack() { DoCorrAttack(); }
-    private void DoCorrAttack() { PerformAction(); StartCoroutine(WaitToPerformAgain()); }
+    private void DoCorrAttack() { PerformAction(); }
     private IEnumerator WaitToPerformAgain()
     {
         float elapsed_time = 0;
-        wait_to_action_time_start = Random.Range(1,9);
+        wait_to_action_time_start = Random.Range(1f, 6f);
+        wait_to_action_time_end = Random.Range(6f, 9f);
         while (elapsed_time <= Random.Range(wait_to_action_time_start, wait_to_action_time_end))
         {
             elapsed_time += Time.deltaTime;
@@ -71,15 +74,16 @@ public class Npc : MonoBehaviour
 
         else if (rand > 40 && rand <= 80)
         {
-            currentGenre = Genre.TRAGEDY; text.text = "TRAGEDY"; text.color = Color.blue;
+            currentGenre = Genre.TRAGEDY; text.text = "TRAGEDY"; text.color = Color.magenta;
         }
 
         else
         {
             currentGenre = Genre.NULL; text.text = "";
         }
-        PerformAction();
+        // PerformAction();
         GameManager.Instance.MoveNpcTo(this, currentGenre);
+        StartCoroutine(WaitToPerformAgain());
     }
 
     private void PerformAction()
@@ -98,6 +102,7 @@ public class Npc : MonoBehaviour
                 ThrowBanana();
                 break;
         }
+        StartCoroutine(WaitToPerformAgain());
     }
 
 
@@ -116,16 +121,16 @@ public class Npc : MonoBehaviour
     }
     private void DoThrowWith(NpcType type, bool destr)
     {
-        GameObject prefabcall = null;
-        switch (type)
-        {
-            case NpcType.BANANA:
-                prefabcall = banana_prefab; break;
-            case NpcType.SPEAR:
-                prefabcall = banana_prefab; break;
-            case NpcType.LIGHTNING:
-                prefabcall = banana_prefab; break;
-        }
+        GameObject prefabcall = banana_prefab;
+        // switch (type)
+        // {
+        //     case NpcType.BANANA:
+        //         prefabcall = banana_prefab; break;
+        //     case NpcType.SPEAR:
+        //         prefabcall = banana_prefab; break;
+        //     case NpcType.LIGHTNING:
+        //         prefabcall = banana_prefab; break;
+        // }
         if (prefabcall != null)
         {
             if (currentGenre.Equals(Genre.COMEDY))
@@ -150,16 +155,16 @@ public class Npc : MonoBehaviour
         //     if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY) &&
         //     GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) //random entre los 2
         //     {
-                if (Random.Range(0, 2) == 0)
-                    pos = GameManager.Instance.player1.GetComponentInChildren<Rigidbody>().transform.position;
-                else
-                    pos = GameManager.Instance.player2.GetComponentInChildren<Rigidbody>().transform.position;
+        if (Random.Range(0, 2) == 0)
+            pos = GameManager.Instance.player1.GetComponentInChildren<Rigidbody>().transform.position;
+        // else
+        //     pos = GameManager.Instance.player2.GetComponentInChildren<Rigidbody>().transform.position;
 
-            // }
-            // else if (GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) // el 2
-            //     pos = GameManager.Instance.player2.movement.transform.position;
-            // else if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY))//el 1
-            //     pos = GameManager.Instance.player1.movement.transform.position;
+        // }
+        // else if (GameManager.Instance.player2.movement.current_genre.Equals(Genre.TRAGEDY)) // el 2
+        //     pos = GameManager.Instance.player2.movement.transform.position;
+        // else if (GameManager.Instance.player1.movement.current_genre.Equals(Genre.TRAGEDY))//el 1
+        //     pos = GameManager.Instance.player1.movement.transform.position;
 
         // }
         return pos;

@@ -31,13 +31,15 @@ public class GameManager : MonoBehaviour
     public List<Npc> tragedy_npcs;
     public List<Npc> null_npcs;
 
-    public  Animator clouds;
+    public Animator clouds;
 
     public float m, s;
 
 
     void Update()
     {
+        if (SceneManager.GetActiveScene().name == "PlayableScene")
+            EndGame();
         if (gameGoesBrr)
         {
             if (s > 0)
@@ -50,29 +52,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject p1Wins,p2Wins;
+    public GameObject win, lost;
     private void EndGame()
     {
-        if(GameManager.Instance.player1.points - GameManager.Instance.player2.points > 0)
-            p1Wins.SetActive(true);
-        else
-            p2Wins.SetActive(true);
+        // if (GameManager.Instance.player1.points - GameManager.Instance.player2.points > 0)
+        if (uiManager.fill.fillAmount >= 1 && s > 0)
+            win.SetActive(true);
+        else if (s <= 0)
+        {
+            lost.SetActive(true);
+            if (!ended_game)
+                StartCoroutine(WaitToQuit());
+        }
+        // p2Wins.SetActive(true);
 
-        StartCoroutine(WaitToQuit());
         //
 
     }
+
+    bool ended_game = false;
     private IEnumerator WaitToQuit()
     {
+        ended_game = true;
         float elapsed_time = 0;
-        while(elapsed_time <= 5f)
+        while (elapsed_time <= 5f)
         {
-            elapsed_time+= Time.deltaTime; 
+            elapsed_time += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        // if (clouds != null)
         clouds.SetTrigger("LoadLevel");
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene("MainMenu");
+        ended_game = false;
     }
 
     public void StartGame()
@@ -84,7 +96,11 @@ public class GameManager : MonoBehaviour
     }
 
 
-
+    void Start()
+    {
+        if (SceneManager.GetActiveScene().name == "PlayableScene")
+            StartGame();
+    }
 
 
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using EZCameraShake;
 
@@ -12,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
     #region variables
     public TMPro.TMP_Text debug_text;
 
+    [Header("Acting info")]
+    [SerializeField] public Joystick joystick;
+    [SerializeField] public Button comedy_button;
+    [SerializeField] public Button tragedy_button;
 
     [Header("Acting info")]
     [SerializeField] public Genre current_genre;
@@ -44,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
     [Space(10)]
     [SerializeField] public Animator player_animator;
 
-    private Vector2 movement_rawInput;
+    [SerializeField] Vector2 movement_rawInput;
     private bool push_rawInput;
     private bool tragedy_rawInput;
     private bool comedy_rawInput;
@@ -79,8 +84,8 @@ public class PlayerMovement : MonoBehaviour
         elapsed_time = 0f;
         isComedy = false; isTragedy = false;
 
-        isdelay_counter_trag = isdelay_counter_com= false;
-        this.current_genre = Genre.NULL; debug_text.text = "";
+        isdelay_counter_trag = isdelay_counter_com = false;
+        this.current_genre = Genre.NULL;
         player_animator.SetBool("Tragedy", false);
         player_animator.SetBool("Comedy", false);
 
@@ -91,6 +96,9 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        movement_rawInput = new Vector2(joystick.Horizontal(), joystick.Vertical());
+        isMoving = joystick.normalizedPoint == Vector2.zero ? false : true;
+        movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
         if (!MovementBlocked)
         {
             if (isMoving)
@@ -113,16 +121,16 @@ public class PlayerMovement : MonoBehaviour
     #region inputs
     private void OnMove(InputValue value)
     {
-        movement_rawInput = value.Get<Vector2>();
-        isMoving = movement_rawInput == Vector2.zero ? false : true;
-        movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
+        // movement_rawInput = value.Get<Vector2>();
+        // isMoving = movement_rawInput == Vector2.zero ? false : true;
+        // movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
     }
     private void OnPush(InputValue value)
     {
         push_rawInput = System.Convert.ToBoolean(value.Get<float>());
         isPushing = push_rawInput;
     }
-    private void OnTragedy()//InputValue value)
+    public void OnTragedy()//InputValue value)
     {
 
         if (!MovementBlocked)
@@ -138,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-    private void OnComedy()//InputValue value)
+    public void OnComedy()//InputValue value)
     {
         if (!MovementBlocked)
         {
@@ -230,8 +238,11 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Move(Vector2 input)
     {
-        Vector3 moveVector = transform.TransformDirection(movement_input) * speed;
-        rb.velocity = new Vector3(moveVector.x, rb.velocity.y, moveVector.z);
+        if (input.magnitude > .1f)
+        {
+            Vector3 moveVector = transform.TransformDirection(movement_input) * speed;
+            rb.velocity = new Vector3(moveVector.x, rb.velocity.y, moveVector.z);
+        }
     }
 
     private void Tragedy()
@@ -276,8 +287,12 @@ public class PlayerMovement : MonoBehaviour
     {
         isdelay_counter_trag = true;
 
-        this.current_genre = Genre.TRAGEDY; debug_text.text = "TRAGEDY"; debug_text.color = Color.blue;
-        player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.TRAGEDY);
+        this.current_genre = Genre.TRAGEDY;
+        int added = GameManager.Instance.GetPointsToAddPlayer(Genre.TRAGEDY);
+
+        player.points += added;
+        if (added > 0)
+            Instantiate(pointsPrefab, transform.position + Vector3.up * 3f, Quaternion.identity, transform).GetComponent<PointsIndicator>().SetPoints(added, Genre.TRAGEDY);
         while (elapsed_time <= delay_counter)
         {
             elapsed_time += Time.deltaTime;
@@ -287,7 +302,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isdelay_counter_trag = false;
             isTragedy = false;
-            this.current_genre = Genre.NULL; debug_text.text = "";
+            this.current_genre = Genre.NULL;
             player_animator.SetBool("Tragedy", false);
         }
         else
@@ -300,12 +315,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
+    public GameObject pointsPrefab;
     private IEnumerator ComedyCorr()
     {
         isdelay_counter_com = true;
 
-        this.current_genre = Genre.COMEDY; debug_text.text = "COMEDY"; debug_text.color = Color.yellow;
-        player.points += GameManager.Instance.GetPointsToAddPlayer(Genre.COMEDY);
+        this.current_genre = Genre.COMEDY;
+        int added = GameManager.Instance.GetPointsToAddPlayer(Genre.COMEDY);
+        player.points += added;
+        if (added > 0)
+            Instantiate(pointsPrefab, transform.position + Vector3.up * 3f, Quaternion.identity, transform).GetComponent<PointsIndicator>().SetPoints(added, Genre.COMEDY);
         while (elapsed_time <= delay_counter)
         {
             elapsed_time += Time.deltaTime;
@@ -315,7 +334,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isdelay_counter_com = false;
             isComedy = false;
-            this.current_genre = Genre.NULL; debug_text.text = "";
+            this.current_genre = Genre.NULL;
             player_animator.SetBool("Comedy", false);
         }
         else

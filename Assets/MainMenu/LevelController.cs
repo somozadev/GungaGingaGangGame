@@ -8,7 +8,7 @@ public class LevelController : MonoBehaviour
 {
     public Animator cloudAnim;
     public bool player1In;
-    public bool player2In;
+    // public bool player2In;
     public float timer;
     public float maxtime;
 
@@ -23,7 +23,7 @@ public class LevelController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player1In && player2In && (timer < maxtime))
+        if (player1In  && (timer < maxtime))
         {
             timer += Time.deltaTime;
         }
@@ -56,6 +56,7 @@ public class LevelController : MonoBehaviour
         else
         {
             SceneManager.LoadScene("PlayableScene");
+            GameManager.Instance.gameGoesBrr=true;
             // Debug.Log("Level loaded");w
         }
 
@@ -71,8 +72,8 @@ public class LevelController : MonoBehaviour
             {
                 if (!player1In)
                     player1In = true;
-                else
-                    player2In = true;
+                // else
+                //     player2In = true;
             }
         }
     }
@@ -85,8 +86,8 @@ public class LevelController : MonoBehaviour
             {
                 if (player1In)
                     player1In = false;
-                else
-                    player2In = false;
+                // else
+                //     player2In = false;
             }
         }
     }

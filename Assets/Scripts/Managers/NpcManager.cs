@@ -45,7 +45,7 @@ public class NpcManager : MonoBehaviour
             else
             {
                 Transform t = GetPoint();
-                GameObject npc = GameObject.Instantiate(simple_npc_prefab, t.position, t.rotation); 
+                GameObject npc = GameObject.Instantiate(simple_npc_prefab, t.position, t.rotation);
                 npc.GetComponent<Npc>().InitNpc();
                 points.Remove(t);
                 points.TrimExcess();
@@ -55,7 +55,11 @@ public class NpcManager : MonoBehaviour
 
     private Transform GetPoint()
     {
-        return points[Random.Range(0, points.Count)];
+        Transform t = points[Random.Range(0, points.Count)];
+        if(t!=null)
+            return t;
+        else
+            return GetPoint();
     }
 
 
