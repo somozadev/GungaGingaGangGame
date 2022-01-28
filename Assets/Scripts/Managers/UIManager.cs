@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     // public Image p2;
     public Image fill;
     [SerializeField] float dif;
-    public float ratio = 0.005f;
+    public float ratio = 0.025f;
 
     public TMPro.TMP_Text timer;
 

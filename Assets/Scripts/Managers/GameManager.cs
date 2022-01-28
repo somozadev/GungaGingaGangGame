@@ -57,16 +57,30 @@ public class GameManager : MonoBehaviour
     {
         // if (GameManager.Instance.player1.points - GameManager.Instance.player2.points > 0)
         if (uiManager.fill.fillAmount >= 1 && s > 0)
-            win.SetActive(true);
-        else if (s <= 0)
-        {
-            lost.SetActive(true);
-            if (!ended_game)
-                StartCoroutine(WaitToQuit());
-        }
+            if (!lost.activeSelf)
+            {
+                win.SetActive(true);
+                s = 0;
+                if (!ended_game)
+                    StartCoroutine(WaitToQuit());
+            }
+            else if (s <= 0)
+            {
+                if (!win.activeSelf)
+                    lost.SetActive(true);
+                if (!ended_game)
+                    StartCoroutine(WaitToQuit());
+            }
         // p2Wins.SetActive(true);
 
         //
+        if (s < 0)
+        {
+            if (!win.activeSelf)
+                lost.SetActive(true);
+            if (!ended_game)
+                StartCoroutine(WaitToQuit());
+        }
 
     }
 

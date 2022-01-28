@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+//using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
@@ -12,9 +12,9 @@ public class Player : MonoBehaviour
     [SerializeField] Material p1mat, p2mat;
     [SerializeField] GameObject meshMat;
 
-    [SerializeField] private PlayerInput playerInput;
+    //[SerializeField] private PlayerInput playerInput;
     [SerializeField] public PlayerMovement movement;
-    public PlayerInput getPlayerInput { get { return playerInput; } }
+    //public PlayerInput getPlayerInput { get { return playerInput; } }
     public GameObject rotObject;
 
     void Start()

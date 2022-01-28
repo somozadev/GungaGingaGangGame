@@ -51,7 +51,7 @@ public class PointsIndicator : MonoBehaviour
             text.color = Color.yellow;
         else if (genre == Genre.TRAGEDY)
             text.color = Color.magenta;
-        text.text = points.ToString();
+        text.text = "+" + points.ToString();
     }
 
 

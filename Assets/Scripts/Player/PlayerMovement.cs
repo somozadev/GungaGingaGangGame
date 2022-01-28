@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
+//using UnityEngine.InputSystem;
 using EZCameraShake;
 
 public class PlayerMovement : MonoBehaviour
@@ -96,9 +96,14 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        //movement_rawInput = new Vector2(joystick.Horizontal(), joystick.Vertical());
+        //isMoving = joystick.normalizedPoint == Vector2.zero ? false : true;
+        //movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
+
         movement_rawInput = new Vector2(joystick.Horizontal(), joystick.Vertical());
-        isMoving = joystick.normalizedPoint == Vector2.zero ? false : true;
+        isMoving = movement_rawInput == Vector2.zero ? false : true;
         movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
+
         if (!MovementBlocked)
         {
             if (isMoving)
@@ -119,17 +124,17 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #region inputs
-    private void OnMove(InputValue value)
-    {
+    //private void OnMove(InputValue value)
+    //{
         // movement_rawInput = value.Get<Vector2>();
         // isMoving = movement_rawInput == Vector2.zero ? false : true;
         // movement_input = new Vector3(movement_rawInput.x, 0f, movement_rawInput.y);
-    }
-    private void OnPush(InputValue value)
-    {
-        push_rawInput = System.Convert.ToBoolean(value.Get<float>());
-        isPushing = push_rawInput;
-    }
+    //}
+    //private void OnPush(InputValue value)
+    //{
+    //    push_rawInput = System.Convert.ToBoolean(value.Get<float>());
+    //    isPushing = push_rawInput;
+    //}
     public void OnTragedy()//InputValue value)
     {
 
